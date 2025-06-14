@@ -1,0 +1,29 @@
+.btn-custom {
+    background-color: #6f42c1;
+    color: white;
+    border: none;
+  }
+  
+  .btn-custom:hover {
+    background-color: #5a32a3;
+  }
+  
+  .object-fit-cover {
+    object-fit: cover;
+  }
+  
+  @media (max-width: 768px) {
+    .tab-content {
+      padding: 0 !important;
+    }
+  
+    .form-control {
+      font-size: 0.9rem;
+    }
+  
+    .btn {
+      font-size: 0.9rem;
+    }
+  }
+
+  
