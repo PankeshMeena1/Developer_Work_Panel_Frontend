@@ -1,61 +1,68 @@
 // components/Chatbot/Chatbot.jsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import {
   BsRobot,
   BsSend,
   BsX,
   BsHandThumbsUp,
-  BsHandThumbsDown
-} from 'react-icons/bs';
-import '../../assests/css/Chatbot.css';
+  BsHandThumbsDown,
+} from "react-icons/bs";
+import "../../assests/css/Chatbot.css";
 
 const Chatbot = () => {
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
-    { role: 'bot', content: 'Hello! How can I help you today?' }
+    { role: "bot", content: "Hello! How can I help you today?" },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    const userMsg = { role: 'user', content: input.trim() };
-    setMessages(prev => [...prev, userMsg]);
-    setInput('');
+    const userMsg = { role: "user", content: input.trim() };
+    setMessages((prev) => [...prev, userMsg]);
+    setInput("");
     setIsLoading(true);
 
     try {
-      const formattedChat = messages.map(m => ({
-        role: m.role === 'user' ? 'user' : 'model',
-        parts: [{ text: m.content }]
+      const formattedChat = messages.map((m) => ({
+        role: m.role === "user" ? "user" : "model",
+        parts: [{ text: m.content }],
       }));
 
-      const currentChat = [...formattedChat, { role: 'user', parts: [{ text: userMsg.content }] }];
-      const apiKey = "AIzaSyA4RnX10QWfsj-c0fzIu5Ttqo2zu5Lza-c"; 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: currentChat })
-        }
-      );
-       
-      console.log("gemine api ", response)
+      const currentChat = [
+        ...formattedChat,
+        { role: "user", parts: [{ text: userMsg.content }] },
+      ];
+
+      const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
+      const apiUrl = `${process.env.REACT_APP_GEMINI_API_URL}?key=${apiKey}`;
+
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: currentChat }),
+      });
+
+      console.log("gemine api ", response);
       const data = await response.json();
-      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      const reply =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
         "I'm sorry, I couldn't generate a response at this moment.";
 
-      setMessages(prev => [...prev, { role: 'bot', content: reply }]);
+      setMessages((prev) => [...prev, { role: "bot", content: reply }]);
     } catch (err) {
       console.error(err);
-      setMessages(prev => [...prev, { role: 'bot', content: 'Gemini API error. Please try again later.' }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "bot", content: "Gemini API error. Please try again later." },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -84,11 +91,19 @@ const Chatbot = () => {
             {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`d-flex mb-3 ${msg.role === 'user' ? 'justify-content-end' : 'justify-content-start'}`}
+                className={`d-flex mb-3 ${
+                  msg.role === "user"
+                    ? "justify-content-end"
+                    : "justify-content-start"
+                }`}
               >
-                <div className={`chat-bubble ${msg.role === 'user' ? 'bg-user' : 'bg-bot'}`}>
+                <div
+                  className={`chat-bubble ${
+                    msg.role === "user" ? "bg-user" : "bg-bot"
+                  }`}
+                >
                   {msg.content}
-                  {msg.role === 'bot' && (
+                  {msg.role === "bot" && (
                     <div className="emoji-response mt-2">
                       <BsHandThumbsUp className="me-2 reaction-icon" />
                       <BsHandThumbsDown className="reaction-icon" />
@@ -108,9 +123,13 @@ const Chatbot = () => {
                 placeholder="Ask anything..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                onKeyDown={(e) => e.key === "Enter" && handleSend()}
               />
-              <button className="btn btn-purple" onClick={handleSend} disabled={isLoading}>
+              <button
+                className="btn btn-purple"
+                onClick={handleSend}
+                disabled={isLoading}
+              >
                 <BsSend />
               </button>
             </div>
