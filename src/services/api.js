@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'mongodb+srv://pankeshmeena977:Pankesh123@cluster0.ezd95gv.mongodb.net/work-updates-tracker/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
